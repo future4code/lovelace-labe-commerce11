@@ -1,86 +1,142 @@
 import React from 'react';
-import './App.css';
+import { Filters } from './components/Filters/Filters';
+import { Products } from './components/Products/Products';
+import { ShoppingCart } from './components/ShoppingCart/ShoppingCart';
+import styled from 'styled-components';
 
-export default function App() {
-    
-    function adiciona1(){
-    
-    let res = document.getElementById('resultado')
-    let total = document.getElementById('total')
-    let butao = '<input type="button" value="Remover" />'
-    let qnt = 0
-    
-    res.innerHTML = `1x Produto 1 ${butao}`
-    total.innerHTML = 12.750
-               
+const AppContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  padding: 16px;
+  gap: 8px;
+`;
+
+const products = [
+  {
+    id: 1,
+    name: 'Produto legal',
+    price: 123,
+    photo: 'https://picsum.photos/200/200?a=1'
+  },
+  {
+    id: 2,
+    name: 'Produto 2',
+    price: 200,
+    photo: 'https://picsum.photos/200/200?a=2'
+  },
+  {
+    id: 3,
+    name: 'Produto 3',
+    price: 30,
+    photo: 'https://picsum.photos/200/200?a=3'
+  },
+  {
+    id: 4,
+    name: 'Produto 4',
+    price: 10,
+    photo: 'https://picsum.photos/200/200?a=4'
+  }
+]
+
+class App extends React.Component {
+  state = {
+    minFilter: 100,
+    maxFilter: 1000,
+    nameFilter: 'Produto',
+    productsInCart: [
+      {
+        id: 4,
+        name: 'Produto 4',
+        price: 10,
+        photo: 'https://picsum.photos/200/200?a=4',
+        quantity: 1
+      },
+      {
+        id: 3,
+        name: 'Produto 3',
+        price: 30,
+        photo: 'https://picsum.photos/200/200?a=3',
+        quantity: 2
+      }
+    ]
+  }
+
+  onChangeMinFilter = (event) => {
+    this.setState({minFilter: event.target.value})
+  }
+
+  onChangeMaxFilter = (event) => {
+    this.setState({maxFilter: event.target.value})
+  }
+
+  onChangeNameFilter = (event) => {
+    this.setState({nameFilter: event.target.value})
+  }
+
+  onAddProductToCart = (productId) => {
+    const productInCart = this.state.productsInCart.find(product => productId === product.id)
+
+    if(productInCart) {
+      const newProductsInCart = this.state.productsInCart.map(product => {
+        if(productId === product.id) {
+          return {
+            ...product,
+            quantity: product.quantity + 1
+          }
+        }
+
+        return product
+      })
+
+      this.setState({productsInCart: newProductsInCart})
+    } else {
+      const productToAdd = products.find(product => productId === product.id)
+
+      const newProductsInCart = [...this.state.productsInCart, {...productToAdd, quantity: 1}]
+
+      this.setState({productsInCart: newProductsInCart})
+    }
+  }
+
+  onRemoveProductFromCart = (productId) => {
+    const newProductsInCart = this.state.productsInCart.map((product) => {
+      if(product.id === productId) {
+        return {
+          ...product,
+          quantity: product.quantity - 1
+        }
+      }
+      return product
+    }).filter((product) => product.quantity > 0)
+
+    this.setState({productsInCart: newProductsInCart})
+  }
+
+  render() {
+    return (
+      <AppContainer>
+        <Filters
+          minFilter={this.state.minFilter}
+          maxFilter={this.state.maxFilter}
+          nameFilter={this.state.nameFilter}
+          onChangeMinFilter={this.onChangeMinFilter}            
+          onChangeMaxFilter={this.onChangeMaxFilter}            
+          onChangeNameFilter={this.onChangeNameFilter}                  
+        />
+        <Products 
+          products={products}
+          minFilter={this.state.minFilter}
+          maxFilter={this.state.maxFilter}
+          nameFilter={this.state.nameFilter}
+          onAddProductToCart={this.onAddProductToCart}
+        />
+        <ShoppingCart
+          productsInCart={this.state.productsInCart}
+          onRemoveProductFromCart={this.onRemoveProductFromCart}
+        />
+      </AppContainer>
+    );
+  }
 }
 
-function adiciona2(){
-    
-    let res = document.getElementById('resultado2')
-    let total = document.getElementById('total')
-    let butao = '<input type="button" value="Remover" />'
-    
-    res.innerHTML = `\n1x Produto 2 ${butao}`
-    total.innerHTML = 10.400
-}
-
-function adiciona3(){
-    
-    let res = document.getElementById('resultado3')
-    let total = document.getElementById('total')
-    let butao = '<input type="button" value="Remover" />'
-    
-    res.innerHTML = '\n1x Produto 3'+' '+butao
-    total.innerHTML = 249.00
-}
-
-  return (
-    <div className="App">
-    <section class="filtro">
-        <h3>Filtros</h3>        
-        
-            Valor mínimo:
-            <input type="number" /><br/><br/>
-            Valor máximo:
-            <input type="number" /><br/><br/>
-            Busca por nome:
-            <input type="text" placeholder="Produto" />
-        
-    </section>
-        <section class="produtos">
-        <h3 class="titulo2">Quantidade de produtos:</h3>
-            <div class="itens">
-                <div class="box-pagina-principal" id="btn1">
-                <img src="https://i.ebayimg.com/images/g/ckwAAOxymiVQ97pR/s-l500.jpg" />
-                Produto 1<br/>
-                US $12.750,00<br/><br/>
-                <input type="button" value="Adicionar ao carrinho" onClick={adiciona1} />
-            </div>
-            <div class="box-pagina-principal" id="btn2">
-                <img src="https://i.ebayimg.com/images/g/KkEAAOSw56Fc0gTq/s-l500.jpg" />
-                Produto 2<br/>
-                US $10 400,00<br/><br/>
-                <input type="button" value="Adicionar ao carrinho" onClick={adiciona2} />
-            </div>
-            <div class="box-pagina-principal" id="btn3">
-                <img src="https://i.ebayimg.com/images/g/9uoAAOSwZTNg8z-p/s-l1600.jpg" />
-                Produto 3<br/>
-                US $249,99<br/><br/>
-                <input type="button" value="Adicionar ao carrinho" onClick={adiciona3} />
-            </div>
-            </div>
-        </section>
-        <section class="carrinho">
-            <h3>Carrinho:</h3>
-            <div class="carrinho-itens" id="resultado"></div>
-            <p class="carrinho-itens" id="resultado2"></p>
-            <div class="carrinho-itens" id="resultado3"></div>
-            <p>Valor total: $ <span id="total">0,00</span></p>
-        </section>
-      
-    </div>
-  );
-}
-
-
+export default App;
