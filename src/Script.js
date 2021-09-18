@@ -1,3 +1,0 @@
-function adiciona(){
-    alert('teste')
-}
