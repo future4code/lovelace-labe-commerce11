@@ -1,3 +1,4 @@
 # lovelace-labe-commerce11
 
-https://fancy-hair.surge.sh/
+Simulador de marketplace com carrinho, card de produtos e filtro para busca
+https://gamy-alarm.surge.sh/
